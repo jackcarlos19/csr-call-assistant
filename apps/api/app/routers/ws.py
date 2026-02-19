@@ -53,8 +53,16 @@ async def session_ws(websocket: WebSocket, session_id: uuid.UUID):
 
                 assigned_seq = await service.persist_event(session_id, envelope)
 
+                outbound_payload = envelope.payload
+                if envelope.type in {"client.transcript_segment", "client.transcript_final"}:
+                    outbound_payload = service.pii_service.redact_dict(envelope.payload)
+
                 outbound = envelope.model_copy(
-                    update={"session_id": session_id, "server_seq": assigned_seq}
+                    update={
+                        "session_id": session_id,
+                        "server_seq": assigned_seq,
+                        "payload": outbound_payload,
+                    }
                 )
                 await _fanout(session_id, outbound.model_dump(mode="json"))
 
