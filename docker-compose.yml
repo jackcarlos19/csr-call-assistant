@@ -15,15 +15,7 @@ services:
       timeout: 3s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+  # Redis support planned for WS pub/sub at scale (>10k concurrent connections)
 
   api:
     build:
@@ -33,7 +25,6 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql+asyncpg://csr_user:${POSTGRES_PASSWORD:-csr_dev_password}@postgres:5432/csr_assist
-      REDIS_URL: redis://redis:6379/0
       ENVIRONMENT: development
       LOG_LEVEL: INFO
       PYTHONPATH: /app

@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str
-    redis_url: str = "redis://redis:6379/0"
+    # Redis support planned for WS pub/sub at scale (>10k concurrent connections)
     environment: str = "development"
     log_level: str = "INFO"
     openrouter_api_key: str = ""

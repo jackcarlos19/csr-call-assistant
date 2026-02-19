@@ -1,7 +1,9 @@
 .env
 **/.env
 node_modules/
+# Ignore Next.js build artifacts
+apps/web/.next/
+apps/web/out/
 .next/
 __pycache__/
 *.pyc
-
