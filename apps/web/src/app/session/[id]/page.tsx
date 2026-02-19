@@ -154,7 +154,7 @@ export default function SessionPage() {
 
       <div className="mx-auto mt-4 grid h-[calc(100vh-11rem)] max-w-7xl grid-cols-1 gap-4 md:grid-cols-2">
         <TranscriptPanel />
-        <div className="flex h-full flex-col gap-4">
+        <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1">
           <EndSessionControl
             sessionId={sessionId}
             autoEndSignal={autoEndSignal}

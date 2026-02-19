@@ -58,12 +58,12 @@ async def session_ws(websocket: WebSocket, session_id: uuid.UUID):
                 )
                 await _fanout(session_id, outbound.model_dump(mode="json"))
 
-                if envelope.type == "client.transcript_final":
+                if envelope.type == "client.transcript_segment":
                     text_content = str(envelope.payload.get("text", ""))
                     await service.evaluate_and_broadcast_rules(
                         session, session_id, text_content
                     )
-                    service.schedule_llm_guidance(session_id)
+                service.schedule_llm_guidance(session_id)
 
                 ok = await service.send_ack(
                     websocket, envelope, session_id, assigned_seq

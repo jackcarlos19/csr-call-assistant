@@ -69,7 +69,7 @@ export const useSessionStore = create<SessionState>((set) => ({
       if (exists) {
         return state;
       }
-      return { alerts: [...state.alerts, alert] };
+      return { alerts: [alert, ...state.alerts] };
     }),
   updateQuestionStatus: (ruleId, satisfied, label) =>
     set((state) => {
@@ -83,8 +83,8 @@ export const useSessionStore = create<SessionState>((set) => ({
       }
       return {
         requiredQuestions: [
-          ...state.requiredQuestions,
           { ruleId, satisfied, label: label ?? ruleId.replaceAll("_", " ") },
+          ...state.requiredQuestions,
         ],
       };
     }),

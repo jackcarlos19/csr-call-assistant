@@ -22,10 +22,10 @@ class LLMService:
             select(CallEvent)
             .where(
                 CallEvent.session_id == session_id,
-                CallEvent.type == "client.transcript_final",
+                CallEvent.type == "client.transcript_segment",
             )
             .order_by(CallEvent.server_seq.desc())
-            .limit(10)
+            .limit(20)
         )
         transcript_events = (await self.db.execute(transcript_stmt)).scalars().all()
         if not transcript_events:
