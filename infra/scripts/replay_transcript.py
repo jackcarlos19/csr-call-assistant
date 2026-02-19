@@ -25,6 +25,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Disconnect at midpoint, reconnect, send client.resume, then continue",
     )
+    parser.add_argument(
+        "--speed",
+        type=float,
+        default=1.0,
+        help="Replay speed multiplier (1.0=realtime, 2.0=2x faster)",
+    )
+    parser.add_argument(
+        "--no-wait",
+        action="store_true",
+        help="Disable inter-segment pacing and send transcript as fast as ACKs allow",
+    )
     return parser.parse_args()
 
 
@@ -130,7 +141,12 @@ async def replay(
     transcript_file: Path,
     deterministic: bool,
     simulate_resume: bool,
+    speed: float,
+    no_wait: bool,
 ) -> None:
+    if speed <= 0:
+        raise ValueError("--speed must be > 0")
+
     data = json.loads(transcript_file.read_text(encoding="utf-8"))
     segments = data.get("segments", [])
     full_transcript_text = " ".join(str(segment.get("text", "")) for segment in segments).strip()
@@ -139,6 +155,7 @@ async def replay(
     split_index = max(1, len(segments) // 2)
     client_seq = 1
     last_server_seq = 0
+    replay_start = asyncio.get_running_loop().time()
 
     def next_client_seq() -> int:
         nonlocal client_seq
@@ -185,7 +202,44 @@ async def replay(
     async def send_range(ws, start_index: int, end_index: int) -> tuple[int, int]:
         nonlocal client_seq
         nonlocal last_server_seq
+
+        def _segment_timestamp_ms(index: int) -> float | None:
+            if index < 1 or index > len(segments):
+                return None
+            value = segments[index - 1].get("timestamp_ms")
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                return None
+            return float(value)
+
+        def _delay_for_segment(index: int) -> tuple[float, str]:
+            if no_wait:
+                return 0.0, "no-wait mode"
+
+            current_ts = _segment_timestamp_ms(index)
+            if current_ts is None:
+                return 0.5, "fallback (missing/invalid timestamp_ms)"
+
+            if index == 1:
+                base_delay = max(0.0, current_ts / 1000.0)
+                return base_delay / speed, f"from first timestamp_ms={int(current_ts)}"
+
+            previous_ts = _segment_timestamp_ms(index - 1)
+            if previous_ts is None:
+                return 0.5, "fallback (previous timestamp_ms missing/invalid)"
+
+            base_delay = max(0.0, (current_ts - previous_ts) / 1000.0)
+            return base_delay / speed, f"delta from timestamp_ms={int(previous_ts)}->{int(current_ts)}"
+
         for index in range(start_index, end_index + 1):
+            delay_seconds, delay_reason = _delay_for_segment(index)
+            if delay_seconds > 0:
+                elapsed = asyncio.get_running_loop().time() - replay_start
+                print(
+                    f"Pacing: sleep {delay_seconds:.2f}s before segment {index} "
+                    f"({delay_reason}, speed={speed:.2f}x, elapsed={elapsed:.2f}s)"
+                )
+                await asyncio.sleep(delay_seconds)
+
             segment = segments[index - 1]
             event = build_segment_event(
                 session_id,
@@ -201,8 +255,9 @@ async def replay(
                 "Received ACK "
                 f"event_id={ack.get('event_id')} server_seq={ack.get('server_seq')}"
             )
+            elapsed = asyncio.get_running_loop().time() - replay_start
+            print(f"Replay elapsed: {elapsed:.2f}s after segment {index}")
             client_seq += 1
-            await asyncio.sleep(0.5)
         return client_seq, last_server_seq
 
     if simulate_resume and segments:
@@ -272,7 +327,16 @@ def main() -> None:
     transcript_file = Path(args.file)
     if not transcript_file.exists():
         raise FileNotFoundError(f"Transcript file not found: {transcript_file}")
-    asyncio.run(replay(session_id, transcript_file, args.deterministic, args.simulate_resume))
+    asyncio.run(
+        replay(
+            session_id,
+            transcript_file,
+            args.deterministic,
+            args.simulate_resume,
+            args.speed,
+            args.no_wait,
+        )
+    )
 
 
 if __name__ == "__main__":
