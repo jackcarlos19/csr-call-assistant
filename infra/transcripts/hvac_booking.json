@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "scenario": "HVAC emergency booking",
+    "duration_seconds": 210,
+    "speakers": {
+      "csr": "Agent Sarah",
+      "customer": "Customer"
+    },
+    "expected_rules": {
+      "keyword_alerts": ["competitor_mention", "price_concern"],
+      "required_questions": ["confirm_service_address", "confirm_callback_number", "confirm_home_warranty"],
+      "prohibited_claims": ["guarantee_same_day"]
+    }
+  },
+  "segments": [
+    {
+      "speaker": "csr",
+      "text": "Thank you for calling Comfort Air Services, this is Sarah. How can I help you today?",
+      "timestamp_ms": 0,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "Hi, my AC unit stopped blowing cold air last night. It's going to be 95 degrees tomorrow and I really need someone out here.",
+      "timestamp_ms": 3200,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "I'm sorry to hear that. I completely understand the urgency, especially with this heat. Let me get some information so we can get a technician out to you as quickly as possible.",
+      "timestamp_ms": 7400,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "Sure, but I called CoolBreeze HVAC first and they said they could come tomorrow. Can you beat that?",
+      "timestamp_ms": 14000,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "I can guarantee we'll have someone there today. We prioritize emergency calls like yours.",
+      "timestamp_ms": 19500,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "That would be amazing. How much is the service call going to cost me?",
+      "timestamp_ms": 24000,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "The diagnostic fee is $89, and that gets applied toward any repairs we do. Now, can I get the address where you need the service?",
+      "timestamp_ms": 28500,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "It's 4521 Maple Drive, unit B.",
+      "timestamp_ms": 35000,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "Got it, 4521 Maple Drive, unit B. And what's the best number to reach you if the tech needs to contact you on the way?",
+      "timestamp_ms": 39000,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "512-555-0147.",
+      "timestamp_ms": 44500,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "Perfect. One last thing — do you happen to have a home warranty that might cover this service?",
+      "timestamp_ms": 48000,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "I don't think so, no.",
+      "timestamp_ms": 52500,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "No problem at all. I have you scheduled for this afternoon between 2 and 4 PM. Our technician will call about 30 minutes before arrival. Is there anything else I can help with?",
+      "timestamp_ms": 56000,
+      "is_final": true
+    },
+    {
+      "speaker": "customer",
+      "text": "No, that's it. Thank you so much.",
+      "timestamp_ms": 64000,
+      "is_final": true
+    },
+    {
+      "speaker": "csr",
+      "text": "You're welcome! Stay cool, and we'll see you this afternoon.",
+      "timestamp_ms": 67000,
+      "is_final": true
+    }
+  ]
+}
