@@ -39,9 +39,9 @@ jobs:
       - name: Lint
         run: cd apps/api && ruff check .
       - name: Run migrations
-        run: cd apps/api && alembic upgrade head
+        run: cd apps/api && PYTHONPATH=. alembic upgrade head
       - name: Test
-        run: cd apps/api && python -m pytest tests/ -v
+        run: cd apps/api && PYTHONPATH=. python -m pytest tests/ -v
 
   web:
     runs-on: ubuntu-latest
