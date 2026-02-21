@@ -10,6 +10,12 @@ class Settings(BaseSettings):
     llm_primary_model: str = ""
     llm_fallback_model: str = ""
     pii_redaction_mode: str = "basic"
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_api_key_sid: str = ""
+    twilio_api_key_secret: str = ""
+    twilio_phone_number: str = ""
+    twilio_stream_ws_base_url: str = "ws://localhost:8000"
 
     class Config:
         env_file = ".env"

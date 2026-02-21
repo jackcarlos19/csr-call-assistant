@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.logging_config import setup_logging
 from app.config import settings
 from app.middleware.correlation import CorrelationIdMiddleware
-from app.routers import health, sessions, ws
+from app.routers import health, sessions, twilio, ws
 import structlog
 
 logger = structlog.get_logger()
@@ -35,4 +35,5 @@ app.add_middleware(
 
 app.include_router(health.router)
 app.include_router(sessions.router)
+app.include_router(twilio.router)
 app.include_router(ws.router)
