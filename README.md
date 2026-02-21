@@ -1,4 +1,4 @@
-Copyright (c) 2026 [Your Name]. All Rights Reserved.
+Copyright (c) 2026 Carlos Altamirano. All Rights Reserved.
 This codebase is proprietary and confidential. Unauthorized copying, modification, or distribution is strictly prohibited.
 
 # CSR Call Assistant (V1)
