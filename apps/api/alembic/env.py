@@ -1,10 +1,16 @@
 from logging.config import fileConfig
+import os
+import sys
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
+
+# Ensure Alembic can import `app` in CI environments.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from app.models import *  # noqa: F401,F403
 from app.models.call_session import Base
 
