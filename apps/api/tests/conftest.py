@@ -1,6 +1,8 @@
 import pytest
 import asyncio
+import uuid
 from httpx import AsyncClient, ASGITransport
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from app.main import app
 from app.db import get_db
@@ -19,15 +21,24 @@ def event_loop():
 # 2. Create a test database engine
 @pytest.fixture(scope="session")
 async def test_engine():
-    engine = create_async_engine(settings.database_url, echo=False)
+    schema_name = f"test_{uuid.uuid4().hex[:8]}"
+    admin_engine = create_async_engine(settings.database_url, echo=False)
+    async with admin_engine.begin() as conn:
+        await conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema_name}"'))
+
+    engine = create_async_engine(
+        settings.database_url,
+        echo=False,
+        connect_args={"server_settings": {"search_path": schema_name}},
+    )
     # Create tables once for the session
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield engine
-    # Drop tables after session
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
     await engine.dispose()
+    async with admin_engine.begin() as conn:
+        await conn.execute(text(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE'))
+    await admin_engine.dispose()
 
 
 # 3. Create a clean session for each test
