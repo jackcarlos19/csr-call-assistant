@@ -1,3 +1,6 @@
+Copyright (c) 2026 [Your Name]. All Rights Reserved.
+This codebase is proprietary and confidential. Unauthorized copying, modification, or distribution is strictly prohibited.
+
 # CSR Call Assistant (V1)
 
 **Real-Time "Agent Assist" Platform for the Home Services Industry**

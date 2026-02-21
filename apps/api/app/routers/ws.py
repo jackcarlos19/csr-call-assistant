@@ -24,6 +24,7 @@ async def session_ws(websocket: WebSocket, session_id: uuid.UUID):
         session = await service.accept_and_register(websocket, session_id)
         if session is None:
             return
+        tenant_id = session.tenant_id
 
         try:
             while True:
@@ -69,7 +70,7 @@ async def session_ws(websocket: WebSocket, session_id: uuid.UUID):
                 if envelope.type == "client.transcript_segment":
                     text_content = str(envelope.payload.get("text", ""))
                     await service.evaluate_and_broadcast_rules(
-                        session, session_id, text_content
+                        session_id, tenant_id, text_content
                     )
                 service.schedule_llm_guidance(session_id)
 

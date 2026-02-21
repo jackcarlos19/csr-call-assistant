@@ -108,9 +108,9 @@ class WebSocketService:
             raise
 
     async def evaluate_and_broadcast_rules(
-        self, session: CallSession, session_id: uuid.UUID, text: str
+        self, session_id: uuid.UUID, tenant_id: str | None, text: str
     ) -> None:
-        rule_events = await self.rule_service.evaluate_segment(session, text)
+        rule_events = await self.rule_service.evaluate_segment(session_id, tenant_id, text)
         logger.info("rules_triggered", session_id=str(session_id), count=len(rule_events))
 
         for rule_event in rule_events:
