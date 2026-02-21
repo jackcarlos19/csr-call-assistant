@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,7 +39,7 @@ class RuleService:
                             EventEnvelope(
                                 session_id=session_id,
                                 type="server.rule_alert",
-                                ts_created=datetime.now(timezone.utc),
+                                ts_created=datetime.now(UTC),
                                 payload={
                                     "rule_id": rule_id,
                                     "kind": kind,
@@ -63,7 +63,7 @@ class RuleService:
                             EventEnvelope(
                                 session_id=session_id,
                                 type="server.required_question_status",
-                                ts_created=datetime.now(timezone.utc),
+                                ts_created=datetime.now(UTC),
                                 payload={
                                     "rule_id": rule_id,
                                     "satisfied": True,

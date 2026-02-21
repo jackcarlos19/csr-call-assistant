@@ -1,5 +1,6 @@
-import structlog
 import logging
+
+import structlog
 
 
 def setup_logging(log_level: str = "INFO") -> None:

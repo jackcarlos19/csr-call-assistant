@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -59,7 +59,7 @@ class LLMService:
             select(func.max(CallEvent.server_seq)).where(CallEvent.session_id == session_id)
         )
         next_server_seq = (max_seq_result.scalar_one_or_none() or 0) + 1
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         envelope = EventEnvelope(
             session_id=session_id,
             type="server.guidance_update",
@@ -129,7 +129,7 @@ class LLMService:
         summary_response = await self.llm_client.complete(messages, schema=CallSummaryResponse)
 
         session.status = "completed"
-        session.ended_at = datetime.now(timezone.utc)
+        session.ended_at = datetime.now(UTC)
         session.summary = summary_response.summary
         session.disposition = summary_response.disposition
         await self.db.commit()

@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
+
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.logging_config import setup_logging
+
 from app.config import settings
+from app.logging_config import setup_logging
 from app.middleware.correlation import CorrelationIdMiddleware
 from app.routers import health, sessions, twilio, ws
-import structlog
 
 logger = structlog.get_logger()
 

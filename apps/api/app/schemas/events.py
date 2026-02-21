@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 from typing import Literal
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 EventType = Literal[
     "client.transcript_segment",

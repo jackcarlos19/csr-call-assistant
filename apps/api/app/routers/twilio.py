@@ -1,4 +1,5 @@
 import uuid
+from typing import Annotated
 from urllib.parse import urlencode
 
 import structlog
@@ -16,7 +17,10 @@ logger = structlog.get_logger()
 
 
 @router.post("/voice/inbound")
-async def inbound_call(request: Request, db: AsyncSession = Depends(get_db)):
+async def inbound_call(
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
     form = await request.form()
     form_data = {k: str(v) for k, v in form.items()}
     signature = request.headers.get("X-Twilio-Signature")
@@ -56,7 +60,10 @@ async def voice_status(request: Request):
 
 
 @router.get("/session/{session_id}", response_model=SessionResponse)
-async def get_twilio_session(session_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def get_twilio_session(
+    session_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
     session = await db.get(CallSession, session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")

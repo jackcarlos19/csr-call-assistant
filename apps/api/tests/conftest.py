@@ -1,13 +1,15 @@
-import pytest
 import asyncio
 import uuid
-from httpx import AsyncClient, ASGITransport
+
+import pytest
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.main import app
-from app.db import get_db
-from app.models.call_session import Base
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
 from app.config import settings
+from app.db import get_db
+from app.main import app
+from app.models.call_session import Base
 
 
 # 1. Override the event loop to be session-scoped (Fixes "Future attached to different loop")

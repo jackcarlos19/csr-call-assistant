@@ -5,7 +5,6 @@ from sqlalchemy import select
 from app.db import async_session
 from app.models.ruleset import Rule, RuleSet
 
-
 RULES_CONFIG = {
     "keyword_alert": [
         {
@@ -76,13 +75,19 @@ RULES_CONFIG = {
             "id": "guarantee_same_day",
             "patterns": ["guarantee.*today", "guarantee.*same.day", "promise.*today"],
             "severity": "critical",
-            "message": "⚠️ PROHIBITED: Cannot guarantee same-day service. Say 'We will do our best to schedule today' instead.",
+            "message": (
+                "⚠️ PROHIBITED: Cannot guarantee same-day service. "
+                "Say 'We will do our best to schedule today' instead."
+            ),
         },
         {
             "id": "price_lock_guarantee",
             "patterns": ["guarantee.*price", "price.*won't.*go up", "lock.*rate", "promise.*price"],
             "severity": "critical",
-            "message": "⚠️ PROHIBITED: Cannot guarantee future pricing. Say 'Current pricing is...' without future commitments.",
+            "message": (
+                "⚠️ PROHIBITED: Cannot guarantee future pricing. "
+                "Say 'Current pricing is...' without future commitments."
+            ),
         },
     ],
 }

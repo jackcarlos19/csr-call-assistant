@@ -1,4 +1,3 @@
-from typing import Type
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel, ValidationError
@@ -20,7 +19,7 @@ class LLMClient:
             base_url="https://openrouter.ai/api/v1",
         )
 
-    async def complete(self, messages: list[dict], schema: Type[BaseModel]) -> BaseModel:
+    async def complete(self, messages: list[dict], schema: type[BaseModel]) -> BaseModel:
         """Generate a completion and validate the JSON response against ``schema``."""
         normalized_messages = self._ensure_json_instruction(messages, schema)
         try:
@@ -47,7 +46,7 @@ class LLMClient:
             raise LLMGenerationError(f"LLM output parsing failed: {exc}") from exc
 
     @staticmethod
-    def _ensure_json_instruction(messages: list[dict], schema: Type[BaseModel]) -> list[dict]:
+    def _ensure_json_instruction(messages: list[dict], schema: type[BaseModel]) -> list[dict]:
         """Ensure request includes explicit JSON and schema-shape instructions."""
         schema_json = schema.model_json_schema()
         properties = schema_json.get("properties", {})

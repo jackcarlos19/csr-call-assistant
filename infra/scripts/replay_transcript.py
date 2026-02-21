@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import websockets
@@ -55,7 +55,7 @@ def build_segment_event(
         "event_id": str(event_uuid),
         "session_id": str(session_id),
         "type": event_type,
-        "ts_created": datetime.now(timezone.utc).isoformat(),
+        "ts_created": datetime.now(UTC).isoformat(),
         "schema_version": "1.0",
         "payload": {
             "speaker": segment.get("speaker"),
@@ -91,7 +91,7 @@ async def send_resume(ws, session_id: uuid.UUID, last_server_seq: int, client_se
         "event_id": str(uuid.uuid4()),
         "session_id": str(session_id),
         "type": "client.resume",
-        "ts_created": datetime.now(timezone.utc).isoformat(),
+        "ts_created": datetime.now(UTC).isoformat(),
         "schema_version": "1.0",
         "payload": {"last_server_seq": last_server_seq},
         "client_seq": client_seq,
@@ -126,7 +126,7 @@ async def wait_for_late_events(ws, cooldown_seconds: float = 5.0) -> None:
         timeout = min(0.5, remaining)
         try:
             raw = await asyncio.wait_for(ws.recv(), timeout=timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             continue
         message = json.loads(raw)
         print(
@@ -184,7 +184,7 @@ async def replay(
                 if isinstance(ack_server_seq, int):
                     last_server_seq = ack_server_seq
                 return ack, last_server_seq, ws
-            except (asyncio.TimeoutError, websockets.exceptions.ConnectionClosed, OSError) as exc:
+            except (TimeoutError, websockets.exceptions.ConnectionClosed, OSError) as exc:
                 if attempt >= MAX_ACK_RETRIES:
                     raise RuntimeError(
                         f"Failed to receive ACK for event_id={event['event_id']} after retries"
@@ -228,7 +228,11 @@ async def replay(
                 return 0.5, "fallback (previous timestamp_ms missing/invalid)"
 
             base_delay = max(0.0, (current_ts - previous_ts) / 1000.0)
-            return base_delay / speed, f"delta from timestamp_ms={int(previous_ts)}->{int(current_ts)}"
+            reason = (
+                "delta from timestamp_ms="
+                f"{int(previous_ts)}->{int(current_ts)}"
+            )
+            return base_delay / speed, reason
 
         for index in range(start_index, end_index + 1):
             delay_seconds, delay_reason = _delay_for_segment(index)
